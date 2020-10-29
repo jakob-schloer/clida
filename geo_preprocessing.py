@@ -3,6 +3,8 @@
 import sys, os
 import numpy as np
 import xarray as xr
+import torch
+from torch.utils.data import Dataset, DataLoader
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -92,14 +94,67 @@ def get_time_series_area(da, lon_range, lat_range):
     return weighted_mean, weighted_var
 
 
+class PacificAnomaliesDataset(Dataset):
+    """Monthly Pacific SST anomalies dataset."""
+
+    def __init__(self, nc_file, 
+                 lon_range=[-70, 120], lat_range=[-30, 30], transform=None):
+
+        ds = xr.open_dataset(nc_file) 
+        # change coordinates
+        self.dataset = set_antimeridian2zero(ds)
+        da = self.dataset['analysed_sst']
+        # cut pacific
+        lon_range = get_antimeridian_coord(lon_range)
+        self.dataarray = cut_map_area(da, 
+            lon_range=lon_range, lat_range=lat_range)
+        
+        self.transform = transform
+    
+    def __len__(self):
+        return len(self.dataarray)
+    
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        sample = {'ssta': self.dataarray.data[idx],
+                  'month': self.dataarray.time[idx].month.data,
+                  'time': self.dataarray.time[idx].data}
+
+        if self.transform:
+            sample = self.transform(sample)
+
+        return sample
+
+
+class ToTensor(object):
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        torch_sample = sample
+        for key in sample.keys():
+            try:
+                torch_sample[key] = torch.from_numpy(sample[key])
+            except:
+                print('Could not convert {} to torch.Tensor!'.format(key))
+
+        return torch_sample 
+
+
 ##############################################################################
 # Plotting routines from here on
 ##############################################################################
-def plot_map(dmap, central_longitude=0):
+def plot_map(dmap, central_longitude=0, vmin=None, vmax=None, ax=None, color='RdBu'):
     """Simple map plotting using xArray."""
-    ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=central_longitude))
+    if ax is None:
+        ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=central_longitude))
 
-    dmap.plot.pcolormesh("lon", "lat", ax=ax, infer_intervals=True)
+    cmap = plt.get_cmap(color)
+
+    dmap.plot.pcolormesh("lon", "lat", ax=ax, 
+        cmap=cmap, vmin=vmin, vmax=vmax,
+        infer_intervals=True)
     ax.coastlines()
     ax.gridlines(draw_labels=True, dms=True, x_inline=False, y_inline=False)    
     ax.add_feature(ctp.feature.RIVERS)
