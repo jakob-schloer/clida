@@ -148,6 +148,7 @@ class ToTensor(object):
 def plot_map(dmap, central_longitude=0, vmin=None, vmax=None, ax=None, color='RdBu'):
     """Simple map plotting using xArray."""
     if ax is None:
+        fig = plt.figure(figsize=(12,6))
         ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=central_longitude))
 
     cmap = plt.get_cmap(color)
