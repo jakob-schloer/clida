@@ -15,6 +15,7 @@ The following packages are required for running the scripts in this repo:
 - pandas
 - numpy
 - gcsfs
+- zarr
 
 
 ## Coming soon
