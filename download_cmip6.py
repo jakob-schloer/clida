@@ -134,23 +134,33 @@ for data_params in cfg.data_params_all:
         # Set output filenames
         output_fns = [None]*len(cfg.pp_params_all)
         path_exists = [None]*len(cfg.pp_params_all)
+
         for subset_params in cfg.pp_params_all:
+            # Foldername
             filedir = (cfg.lpaths['raw_data_dir'] + '/'
                        + cmip6_sub_row['table_id'] + '/'
                        + cmip6_sub_row['experiment_id'] + '/'
                        + cmip6_sub_row['source_id'] + '/'
                        + cmip6_sub_row['variable_id'] + '/'
                        )
-            output_fns[cfg.pp_params_all.index(subset_params)] = (
-                filedir +
-                cmip6_sub_row['variable_id']+'_' +
-                cmip6_sub_row['table_id']+'_' +
-                cmip6_sub_row['source_id'] + '_' +
-                cmip6_sub_row['experiment_id']+'_' +
-                cmip6_sub_row['member_id']+'_' +
-                '-'.join([re.sub('-', '', t) for t in subset_params['time'][cmip6_sub_row['experiment_id']]]) +
-                subset_params['fn_suffix']+'.nc'
-            )
+
+            # Filename 
+            fname = (filedir +
+                     cmip6_sub_row['variable_id']+'_' +
+                     cmip6_sub_row['table_id']+'_' +
+                     cmip6_sub_row['source_id'] + '_' +
+                     cmip6_sub_row['experiment_id']+'_' +
+                     cmip6_sub_row['member_id']+'_')
+
+            if 'time' in subset_params:
+                fname += '-'.join(
+                    [re.sub('-', '', t) for t in subset_params['time'][cmip6_sub_row['experiment_id']] ]
+                )
+            if 'fn_suffix' in subset_params:
+                fname += subset_params['fn_suffix']
+            fname +='.nc'
+            
+            output_fns[cfg.pp_params_all.index(subset_params)] = fname
 
             # Check if path exists
             path_exists[cfg.pp_params_all.index(subset_params)] = os.path.exists(
@@ -273,17 +283,18 @@ for data_params in cfg.data_params_all:
                 )
 
             # Subset by time as set in subset_params
+            time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
             if (ds.time.max().dt.day == 30) | (type(ds.time.values[0]) == cftime._cftime.Datetime360Day):
                 # (If it's a 360-day calendar, then subsetting to "12-31"
                 # will throw an error; this switches that call to "12-30")
                 # Also checking explicitly for 360day calendar; some monthly
                 # data is still shown as 360-day even when it's monthly, and will
                 # fail on date ranges with date 31 in a month
-                ds_tmp = (ds_tmp.sel(time=slice(subset_params['time'][cmip6_sub_row['experiment_id']][0],
-                                                re.sub('-31', '-30', subset_params['time'][cmip6_sub_row['experiment_id']][1]))))
-            else:
                 ds_tmp = (ds_tmp.sel(time=slice(
-                    *subset_params['time'][cmip6_sub_row['experiment_id']])))
+                    time_range[0], re.sub('-31', '-30', time_range[1])
+                    )))
+            else:
+                ds_tmp = (ds_tmp.sel(time=slice(*time_range)))
 
             # Save as NetCDF file
             ds_tmp.to_netcdf(
