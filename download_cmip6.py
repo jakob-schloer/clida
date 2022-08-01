@@ -107,8 +107,7 @@ elif len((source_calls-1).nonzero()[0]) > 1:
 fs = gcsfs.GCSFileSystem(token='anon', access='read_only')
 # Get info about CMIP6 datasets
 cmip6_datasets = pd.read_csv(
-#    'https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv'
-    'climate_data/cmip6-zarr-consolidated-stores.csv'
+    'https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv'
 )
 # Get subset based on the data params above (for all search parameters)
 cmip6_sub = cmip6_datasets.query(subset_query)
@@ -136,8 +135,12 @@ for data_params in cfg.data_params_all:
         output_fns = [None]*len(cfg.pp_params_all)
         path_exists = [None]*len(cfg.pp_params_all)
         for subset_params in cfg.pp_params_all:
-            filedir = (cfg.lpaths['raw_data_dir'] +
-                       '/' + cmip6_sub_row['source_id'] + '/')
+            filedir = (cfg.lpaths['raw_data_dir'] + '/'
+                       + cmip6_sub_row['table_id'] + '/'
+                       + cmip6_sub_row['experiment_id'] + '/'
+                       + cmip6_sub_row['source_id'] + '/'
+                       + cmip6_sub_row['variable_id'] + '/'
+                       )
             output_fns[cfg.pp_params_all.index(subset_params)] = (
                 filedir +
                 cmip6_sub_row['variable_id']+'_' +
