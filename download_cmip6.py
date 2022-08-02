@@ -283,7 +283,12 @@ for data_params in cfg.data_params_all:
                 )
 
             # Subset by time as set in subset_params
-            time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
+            if 'time' in subset_params:
+                time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
+            else:
+                time_range = [str(ds.time.min().dt.strftime("%Y-%m-%d").data),
+                              str(ds.time.max().dt.strftime("%Y-%m-%d").data)]
+
             if (ds.time.max().dt.day == 30) | (type(ds.time.values[0]) == cftime._cftime.Datetime360Day):
                 # (If it's a 360-day calendar, then subsetting to "12-31"
                 # will throw an error; this switches that call to "12-30")

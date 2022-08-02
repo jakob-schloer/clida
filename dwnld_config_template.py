@@ -16,12 +16,9 @@ data_params_all = [
 
 # Set parameters for spatiotemporal preprocessing
 pp_params_all = [{
-    'time': {
-        'historical': ['1850-01-01', '2014-12-31'],
-        'piControl': ['0001-01-01', '1200-12-31']},
-    },                  # make sure to specify the experiment id for each time range
     'lon_range':180,    # 180 or 360 - do you want your output file to count lon -180:180 or 0:360?
     'lon_origin':0,
+#    'time': {'historical': ['1850-01-01', '2014-12-31']}, # specify a time range for an experiment_id
 #    'lat':[-90, 90],   # Cut lat range
 #    'lon':[-180, 180], # Cut lon range
 #    'fn_suffix':'',    # added to end of filename when saving
