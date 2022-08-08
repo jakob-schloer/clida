@@ -146,18 +146,18 @@ for data_params in cfg.data_params_all:
 
             # Filename 
             fname = (filedir +
-                     cmip6_sub_row['variable_id']+'_' +
-                     cmip6_sub_row['table_id']+'_' +
-                     cmip6_sub_row['source_id'] + '_' +
-                     cmip6_sub_row['experiment_id']+'_' +
-                     cmip6_sub_row['member_id']+'_')
+                     cmip6_sub_row['variable_id']
+                     +'_' +cmip6_sub_row['table_id']
+                     +'_' +cmip6_sub_row['source_id']
+                     +'_' +cmip6_sub_row['experiment_id']
+                     +'_' +cmip6_sub_row['member_id'])
 
             if 'time' in subset_params:
-                fname += '-'.join(
+                fname += '_' + '-'.join(
                     [re.sub('-', '', t) for t in subset_params['time'][cmip6_sub_row['experiment_id']] ]
                 )
             if 'fn_suffix' in subset_params:
-                fname += subset_params['fn_suffix']
+                fname += '_' + subset_params['fn_suffix']
             fname +='.nc'
             
             output_fns[cfg.pp_params_all.index(subset_params)] = fname
@@ -232,12 +232,13 @@ for data_params in cfg.data_params_all:
                     'in the main variable in the first timestep'
                 )
 
-        # Sort by time, if not sorted (this happened with
-        # a model; keeping a warning, cuz this seems weird)
-        if (ds.time.values != np.sort(ds.time)).any():
-            warnings.warn('Model '+ds.source_id +
-                          ' has an unsorted time dimension.')
-            ds = ds.sortby('time')
+        if cmip6_sub_row['table_id'] != 'fx':
+            # Sort by time, if not sorted (this happened with
+            # a model; keeping a warning, cuz this seems weird)
+            if (ds.time.values != np.sort(ds.time)).any():
+                warnings.warn('Model '+ds.source_id +
+                              ' has an unsorted time dimension.')
+                ds = ds.sortby('time')
 
         # If 360-day calendar, regrid to 365-day calendar
         if regrid_360 and cmip6_sub_row['table_id'] == 'day':
@@ -282,24 +283,25 @@ for data_params in cfg.data_params_all:
                     'fix_lons did not work because of the multi-dimensional index'
                 )
 
-            # Subset by time as set in subset_params
-            if 'time' in subset_params:
-                time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
-            else:
-                time_range = [str(ds.time.min().dt.strftime("%Y-%m-%d").data),
-                              str(ds.time.max().dt.strftime("%Y-%m-%d").data)]
+            if cmip6_sub_row['table_id'] != 'fx':
+                # Subset by time as set in subset_params
+                if 'time' in subset_params:
+                    time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
+                else:
+                    time_range = [str(ds.time.min().dt.strftime("%Y-%m-%d").data),
+                                  str(ds.time.max().dt.strftime("%Y-%m-%d").data)]
 
-            if (ds.time.max().dt.day == 30) | (type(ds.time.values[0]) == cftime._cftime.Datetime360Day):
-                # (If it's a 360-day calendar, then subsetting to "12-31"
-                # will throw an error; this switches that call to "12-30")
-                # Also checking explicitly for 360day calendar; some monthly
-                # data is still shown as 360-day even when it's monthly, and will
-                # fail on date ranges with date 31 in a month
-                ds_tmp = (ds_tmp.sel(time=slice(
-                    time_range[0], re.sub('-31', '-30', time_range[1])
-                    )))
-            else:
-                ds_tmp = (ds_tmp.sel(time=slice(*time_range)))
+                if (ds.time.max().dt.day == 30) | (type(ds.time.values[0]) == cftime._cftime.Datetime360Day):
+                    # (If it's a 360-day calendar, then subsetting to "12-31"
+                    # will throw an error; this switches that call to "12-30")
+                    # Also checking explicitly for 360day calendar; some monthly
+                    # data is still shown as 360-day even when it's monthly, and will
+                    # fail on date ranges with date 31 in a month
+                    ds_tmp = (ds_tmp.sel(time=slice(
+                        time_range[0], re.sub('-31', '-30', time_range[1])
+                        )))
+                else:
+                    ds_tmp = (ds_tmp.sel(time=slice(*time_range)))
 
             # Save as NetCDF file
             ds_tmp.to_netcdf(
