@@ -6,15 +6,20 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 lpaths = {
 	"raw_data_dir": PATH + "/climate_data"
 }
+overwrite = True
+
 
 # CMIP6 specification
+# ======================================================================================
 data_params_all = [
     {'experiment_id': 'historical', 'source_id': 'CESM2',
      'member_id': 'r1i1p1f1',  # TODO: remove to download all members
      'table_id': 'Amon', 'variable_id': 'ts'},
+    {'experiment_id': 'historical', 'source_id': 'CESM2',
+     'member_id': 'r1i1p1f1',  # TODO: remove to download all members
+     'table_id': 'fx', 'variable_id': 'tas'},
 ]
 
-# Set parameters for spatiotemporal preprocessing
 pp_params_all = [{
     'lon_range':180,    # 180 or 360 - do you want your output file to count lon -180:180 or 0:360?
     'lon_origin':0,
@@ -23,3 +28,17 @@ pp_params_all = [{
 #    'lon':[-180, 180], # Cut lon range
 #    'fn_suffix':'',    # added to end of filename when saving
 }]  # set origin (first lon value) of pre-processed grid.
+
+
+# ERSSTv5 and HadISST
+# ======================================================================================
+data_params_all = [
+    {'variable': 'sst'}
+]
+
+pp_params_all = [{
+    'grid_step' : 1,
+    'lat': [-60, 60], 
+    'lon': [-150, 150], 
+    'time_average': 'month', 
+}]  .
