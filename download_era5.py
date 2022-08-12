@@ -21,8 +21,10 @@ Variable list:
 @Time    :   2022/08/12 09:08:23
 @Contact :   jakob.schloer@uni-tuebingen.de
 '''
+# %%
 import sys
 import os
+from tkinter import Variable
 import warnings
 import numpy as np
 import xarray as xr
@@ -67,17 +69,16 @@ for data_params in cfg.data_params_all:
     print(f"Download year {starty} to {endy}")
     years = np.arange(starty, endy+1, 1)
 
-    dirpath = cfg.lpaths['raw_data_dir'] + f"/ERA5" + f"/{resolution}"
-
     for plevel in plevels:
         print(f"Download pressure level {plevel}")
         for year in years:
+            dirpath = cfg.lpaths['raw_data_dir'] + f"/ERA5" + f"/{resolution}"
             if plevel == 'sp':
                 dirpath += f'/single_pressure_level/{variable}/'
             else:
                 dirpath += f'/multi_pressure_level/{variable}/{plevel}/'
 
-            prefix = (dirpath + f"/{variable}_{year}_{plevel}")
+            prefix = (dirpath + f"/{variable}_era5_{resolution}_{plevel}_{year}")
             fname = prefix + ".nc"
 
             if (not cfg.overwrite) & (os.path.exists(fname)):
@@ -171,43 +172,46 @@ for data_params in cfg.data_params_all:
                             ],
                         },
                         fname)
-                if resolution == 'monthly':
-                    if plevel == 'sp':
-                        c.retrieve(
-                            'reanalysis-era5-single-levels-monthly-means',
-                            {
-                                'product_type': 'monthly_averaged_reanalysis',
-                                'format': 'netcdf',
-                                'variable': [variable],
-                                'year': [str(year)],
-                                'month': [
-                                    '01', '02', '03',
-                                    '04', '05', '06',
-                                    '07', '08', '09',
-                                    '10', '11', '12',
-                                ],
-                                'time': '00:00',
-                            },
-                            fname)
-                    else:
-                        c.retrieve(
-                            'reanalysis-era5-pressure-levels-monthly-means',
-                            {
-                                'product_type': 'monthly_averaged_reanalysis',
-                                'format': 'netcdf',
-                                'variable': [variable],
-                                'year': [str(year)],
-                                'pressure_level': plevel,
-                                'month': [
-                                    '01', '02', '03',
-                                    '04', '05', '06',
-                                    '07', '08', '09',
-                                    '10', '11', '12',
-                                ],
-                                'time': '00:00',
-                            },
-                            fname)
-                del c
+
+            elif resolution == 'monthly':
+                if plevel == 'sp':
+                    c.retrieve(
+                        'reanalysis-era5-single-levels-monthly-means',
+                        {
+                            'product_type': 'monthly_averaged_reanalysis',
+                            'format': 'netcdf',
+                            'variable': [variable],
+                            'year': [str(year)],
+                            'month': [
+                                '01', '02', '03',
+                                '04', '05', '06',
+                                '07', '08', '09',
+                                '10', '11', '12',
+                            ],
+                            'time': '00:00',
+                        },
+                        fname)
+                else:
+                    c.retrieve(
+                        'reanalysis-era5-pressure-levels-monthly-means',
+                        {
+                            'product_type': 'monthly_averaged_reanalysis',
+                            'format': 'netcdf',
+                            'variable': [variable],
+                            'year': [str(year)],
+                            'pressure_level': plevel,
+                            'month': [
+                                '01', '02', '03',
+                                '04', '05', '06',
+                                '07', '08', '09',
+                                '10', '11', '12',
+                            ],
+                            'time': '00:00',
+                        },
+                        fname)
+            else:
+                ValueError(f"{resolution} does not exist!")
+            del c
 
             dwnld_files.append(dict(
                 fname=fname,
