@@ -30,7 +30,22 @@ pp_params_all = [{
 }]  # set origin (first lon value) of pre-processed grid.
 
 
-# ERSSTv5 and HadISST
+# ERA5 
+# ======================================================================================
+data_params_all = [
+    {'variable': 'sst', 
+     'resolution': 'hourly', # 'hourly', 'monthly'
+     'plevels': [1000], 
+     'time_range': [2017, 2019]}
+]
+pp_params_all = [{
+    'grid_step' : 1,
+    'lat': [-60, 60], 
+    'lon': [-150, 150], 
+    'time_average': 'day', 
+}]
+
+# ERSSTv5, HadISST, COBE2, 
 # ======================================================================================
 data_params_all = [
     {'variable': 'sst'}
@@ -41,4 +56,4 @@ pp_params_all = [{
     'lat': [-60, 60], 
     'lon': [-150, 150], 
     'time_average': 'month', 
-}]  .
+}]
