@@ -16,9 +16,11 @@ def check_dimensions(ds, sort=True):
 
     rename_dic = {
         'longitude': 'lon',
-        'latitude': 'lat',
         'nav_lon': 'lon',
-        'nav_lat': 'lat'
+        'xt_ocean': 'lon',
+        'latitude': 'lat',
+        'nav_lat': 'lat',
+        'yt_ocean': 'lat',
     }
     for c_old, c_new in rename_dic.items():
         if c_old in dims:
@@ -49,22 +51,29 @@ def check_dimensions(ds, sort=True):
     return ds
 
 
-def save_to_file(xArray, filepath, var_name=None):
+def save_to_file(da, filepath, var_name=None):
     """Save dataset or dataarray to file."""
     if os.path.exists(filepath):
         print("File" + filepath + " already exists!")
 
     # convert xr.dataArray to xr.dataSet if needed
     if var_name is not None:
-        ds = xArray.to_dataset(name=var_name)
+        ds = da.to_dataset(name=var_name)
     else:
-        ds = xArray
+        ds = da 
+
     # Store to .nc file
+    if os.path.exists(filepath):
+        print(f"File '{filepath}' already exists!")
+        filepath = filepath + "_new"
+
     try:
         ds.to_netcdf(filepath)
+        print(f"File is stored to '{filepath}'!")
     except OSError:
-        print("Could not write to file!")
-    return
+        print(f"Could not write to '{filepath}'!")
+
+    return None
 
 
 def time_average(ds, group='1D'):

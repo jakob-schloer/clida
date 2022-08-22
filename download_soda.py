@@ -24,10 +24,12 @@ import dwnld_config as cfg
 variables = {
     'sst': dict(
         url='https://dsrs.atmos.umd.edu/DATA/soda3.12.2/REGRIDED/ocean/',
-        start='18500101',
-        end='20191201',
+        prefix='soda3.12.2_mn_ocean_reg_',
+        start='1980',
+        end='2017',
         time_res='month',
-        vname='sst'
+        vname='temp',
+        zlevel=0
     )
 }
 # %%
@@ -43,43 +45,54 @@ for data_params in cfg.data_params_all:
  
     # Filepath
     dirpath = cfg.lpaths['raw_data_dir'] + f"/SODA"
-    prefix = (dirpath + f"/{data_params['variable']}_SODA_{varspec['time_res']}"
-              + f"_{varspec['start']}-{varspec['end']}")
-    fname = prefix + ".nc"
 
-    if (not cfg.overwrite) & (os.path.exists(fname)):
-        warnings.warn(f"File {fname} exists and will not be overwritten!")
-    else:
-        # Create directory
-        if not os.path.exists(dirpath):
-            os.makedirs(dirpath)
+    # Create directory
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
 
-        # Download data
-        print(f'Download {fname}.')
-        
-        # TODO: continue here
-        urlpath = urlopen(varspec['url'])
-        string = urlpath.read().decode('utf-8')
+    # Download data
+    urlpath = urlopen(varspec['url'])
+    string = urlpath.read().decode('utf-8')
+    pattern = re.compile(varspec['prefix']+ '[0-9]{4}.nc') 
+    remotefilelist = pattern.findall(string)
 
-        pattern = re.compile('ch[0-9]*.nc') 
-        filelist = pattern.findall(string)
-        print(filelist)
-
-#%%        
-        for filename in filelist:
-            remotefile = urlopen('http://www.divms.uiowa.edu/~jni/courses/ProgrammignInCobol/presentation/' + filename)
-            localfile = open(filename,'wb')
+    localfilelist = []
+    for i, remotefname in enumerate(remotefilelist):
+        fname = dirpath + "/" + remotefname
+        if (cfg.overwrite) | (not os.path.exists(fname)):
+            print(f'Download {remotefname}:')
+            remotefile = urlopen(varspec['url'] + remotefname)
+            localfile = open(fname ,'wb')
             localfile.write(remotefile.read())
             localfile.close()
             remotefile.close()        
+        else:
+            print(f"File {fname} exists and will not be overwritten!")
         
-
+        localfilelist.append(fname)
+    
+    # Merge and preprocess files
+    filelist = []
+    for i, fname in enumerate(localfilelist):
+        # Open file
+        ds = xr.open_dataset(fname)
+        da = ds[varspec['vname']]
+        if 'zlevel' in varspec.keys():
+            da = da.isel(st_ocean=0)
+        da = ut.check_dimensions(da)
+        filelist.append(da)
+    da_merge = xr.concat(filelist, dim='time')
+    prefix = (dirpath + f"/{data_params['variable']}_SODA_{varspec['time_res']}"
+              + f"_{varspec['start']}-{varspec['end']}")
+    ut.save_to_file(da_merge, prefix + ".nc", var_name=data_params['variable'])
 
     dwnld_files.append(dict(
-        fname=fname,
+        fname=prefix + ".nc",
         prefix=prefix,
         variable=data_params['variable']
     ))
+
+
 
 # %%
 # Preprocess downloaded files 
@@ -93,7 +106,7 @@ for i, f_dwnld in enumerate(dwnld_files):
         # Process all downloaded files equally
         pp_params = cfg.pp_params_all[0]
         
-    vname = variables[f_dwnld['variable']]['vname']
+    vname = f_dwnld['variable']
     prefix = f_dwnld['prefix']
     # Open file
     ds = xr.open_dataset(f_dwnld['fname'])
