@@ -74,9 +74,6 @@ for data_params in cfg.data_params_all:
         
         localfilelist.append(fname)
     
-        # TODO: remove
-        if i >= 1:
-            break
 
     # Merge and preprocess files
     filelist = []
@@ -154,5 +151,6 @@ for i, f_dwnld in enumerate(dwnld_files):
         prefix += f"_{pp_params['grid_step']}x{pp_params['grid_step']}"
 
     # Save to file
-    ut.save_to_file(da, prefix + ".nc", var_name=f_dwnld['variable'])
+    if prefix != f_dwnld['prefix']:
+        ut.save_to_file(da, prefix + ".nc", var_name=f_dwnld['variable'])
 # %%
