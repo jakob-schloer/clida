@@ -44,7 +44,8 @@ for data_params in cfg.data_params_all:
     varspec = variables[data_params['variable']]
  
     # Filepath
-    dirpath = cfg.lpaths['raw_data_dir'] + f"/SODA"
+    dirpath = (cfg.lpaths['raw_data_dir']
+               + f"/SODA/{varspec['time_res']}/{data_params['variable']}")
 
     # Create directory
     if not os.path.exists(dirpath):
@@ -75,7 +76,7 @@ for data_params in cfg.data_params_all:
         ds = xr.open_dataset(fname)
         da = ds[varspec['vname']]
         if 'zlevel' in varspec.keys():
-            da = da.isel(st_ocean=0)
+            da = da.isel(st_ocean=varspec['zlevel'])
         da = ut.check_dimensions(da)
         filelist.append(da)
     da_merge = xr.concat(filelist, dim='time')

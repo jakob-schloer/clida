@@ -23,7 +23,7 @@ import dwnld_config as cfg
 variables = {
     'sst': dict(
         url='https://downloads.psl.noaa.gov/Datasets/noaa.ersst.v5/sst.mnmean.nc',
-        start='18540101',
+        start='1854',
         end='present',
         time_res='month',
         vname='sst'
@@ -41,7 +41,8 @@ for data_params in cfg.data_params_all:
     varspec = variables[data_params['variable']]
  
     # Filepath
-    dirpath = cfg.lpaths['raw_data_dir'] + f"/ERSSTv5"
+    dirpath = (cfg.lpaths['raw_data_dir']
+               + f"/ERSSTv5/{varspec['time_res']}/{data_params['variable']}")
     prefix = (dirpath + f"/{data_params['variable']}_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
     fname = prefix + ".nc"

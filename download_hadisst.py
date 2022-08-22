@@ -25,7 +25,7 @@ import dwnld_config as cfg
 variables = {
     'sst': dict(
         url='https://www.metoffice.gov.uk/hadobs/hadisst/data/HadISST_sst.nc.gz',
-        start='18700101',
+        start='1870',
         end='present',
         time_res='month',
         vname='sst'
@@ -43,7 +43,8 @@ for data_params in cfg.data_params_all:
     varspec = variables[data_params['variable']]
  
     # Filepath
-    dirpath = cfg.lpaths['raw_data_dir'] + f"/HadISST"
+    dirpath = (cfg.lpaths['raw_data_dir']
+               + f"/HadISST/{varspec['time_res']}/{data_params['variable']}")
     prefix = (dirpath + f"/{data_params['variable']}_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
     fname = prefix + ".nc"

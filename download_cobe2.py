@@ -23,8 +23,8 @@ import dwnld_config as cfg
 variables = {
     'sst': dict(
         url='https://downloads.psl.noaa.gov/Datasets/COBE2/sst.mon.mean.nc',
-        start='18500101',
-        end='20191201',
+        start='1850',
+        end='2019',
         time_res='month',
         vname='sst'
     )
@@ -41,7 +41,8 @@ for data_params in cfg.data_params_all:
     varspec = variables[data_params['variable']]
  
     # Filepath
-    dirpath = cfg.lpaths['raw_data_dir'] + f"/COBE2"
+    dirpath = (cfg.lpaths['raw_data_dir']
+               + f"/COBE2/{varspec['time_res']}/{data_params['variable']}")
     prefix = (dirpath + f"/{data_params['variable']}_COBE2_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
     fname = prefix + ".nc"
