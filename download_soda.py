@@ -60,11 +60,11 @@ for data_params in cfg.data_params_all:
     for i, remotefname in enumerate(remotefilelist):
         fname = dirpath + "/" + remotefname
         if (cfg.overwrite) | (not os.path.exists(fname)):
-            print(f'Download {remotefname}:')
+            print(f'Download {remotefname}:', flush=True)
             response = request.urlretrieve(varspec['url'] + remotefname,
                                            fname)
         else:
-            print(f"File {fname} exists and will not be overwritten!")
+            print(f"File {fname} exists and will not be overwritten!", flush=True)
         
         localfilelist.append(fname)
     
@@ -112,7 +112,7 @@ for i, f_dwnld in enumerate(dwnld_files):
 
     # Time averages
     if 'time_average' in list(pp_params.keys()):
-        print(f"Resample time by {pp_params['time_average']} and compute mean.")
+        print(f"Resample time by {pp_params['time_average']} and compute mean.", flush=True)
         da = da.resample(time=pp_params['time_average'], label='left').mean()
         da = da.assign_coords(
             dict(time=da['time'].data + np.timedelta64(1, 'D'))
@@ -132,14 +132,14 @@ for i, f_dwnld in enumerate(dwnld_files):
         lat_range = None
 
     if ('lon' in list(pp_params.keys())) or ('lat' in list(pp_params.keys())):
-        print(f'Get selected area: lon={lon_range}, lat={lat_range}!')
+        print(f'Get selected area: lon={lon_range}, lat={lat_range}!', flush=True)
         da = ut.cut_map(
             da, lon_range=lon_range, lat_range=lat_range, shortest=False
         ) 
 
     # coarse grid if needed
     if 'grid_step' in list(pp_params.keys()):
-        print(f"Interpolate grid on res {pp_params['grid_step']}")
+        print(f"Interpolate grid on res {pp_params['grid_step']}", flush=True)
         da, grid = ut.set_grid(
             da, step_lat=pp_params['grid_step'], step_lon=pp_params['grid_step'],
             lat_range=lat_range, lon_range=lon_range)
