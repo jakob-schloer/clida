@@ -10,7 +10,7 @@
 import os
 import re
 import warnings
-from urllib.request import Request, urlopen
+import urllib.request as request   
 from tqdm import tqdm
 import xarray as xr
 import pandas as pd
@@ -51,7 +51,7 @@ for data_params in cfg.data_params_all:
         os.makedirs(dirpath)
 
     # Download data
-    urlpath = urlopen(varspec['url'])
+    urlpath = request.urlopen(varspec['url'])
     string = urlpath.read().decode('utf-8')
     pattern = re.compile(varspec['prefix']+ '[0-9]{4}.nc') 
     remotefilelist = pattern.findall(string)
@@ -61,11 +61,8 @@ for data_params in cfg.data_params_all:
         fname = dirpath + "/" + remotefname
         if (cfg.overwrite) | (not os.path.exists(fname)):
             print(f'Download {remotefname}:')
-            remotefile = urlopen(varspec['url'] + remotefname)
-            localfile = open(fname ,'wb')
-            localfile.write(remotefile.read())
-            localfile.close()
-            remotefile.close()        
+            response = request.urlretrieve(varspec['url'] + remotefname,
+                                           fname)
         else:
             print(f"File {fname} exists and will not be overwritten!")
         
