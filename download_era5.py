@@ -36,12 +36,6 @@ import utils as ut
 # Get config file
 import dwnld_config as cfg
 
-variables = {
-    'sea_surface_temperature': dict(
-        vname='sst'
-    )
-}
-
 # %%
 # Download files
 ##########################################################################################
@@ -224,27 +218,31 @@ for data_params in cfg.data_params_all:
 
         # Merge and preprocess files
         merge_files = []
-        vname = variables[variable]['vname']
         for i, fname in enumerate(filelist):
             # Open file
             ds = xr.open_dataset(fname)
-            da = ds[vname]
-            da = ut.check_dimensions(da)
-            merge_files.append(da)
-        da_merge = xr.concat(merge_files, dim='time')
-        prefix = (dirpath + f"/{vname}_era5_{resolution}_{plevel}"
+            ds = ut.check_dimensions(ds)
+            merge_files.append(ds)
+        ds_merge = xr.concat(merge_files, dim='time')
+        prefix = (dirpath + f"/{variable}_era5_{resolution}_{plevel}"
                   + f"_{starty}-{endy}")
-        ut.save_to_file(da_merge, prefix + "_raw.nc", var_name=data_params['variable'])
+        ds_merge.to_netcdf(prefix + "_raw.nc")
             
         dwnld_files.append(dict(
             fname=prefix + "_raw.nc",
             prefix=prefix,
-            variable=vname,
+            variable=variable,
         ))
 
 # %%
 # Preprocess downloaded files
 # ======================================================================================
+variables = {
+    'sea_surface_temperature': dict(
+        vname='sst'
+    )
+}
+
 for i, f_dwnld in enumerate(dwnld_files):
     if len(cfg.pp_params_all) > 1:
         raise ValueError(
@@ -253,12 +251,16 @@ for i, f_dwnld in enumerate(dwnld_files):
         # Process all downloaded files equally
         pp_params = cfg.pp_params_all[0]
 
+    if f_dwnld['variable'] not in list(variables.keys()):
+        raise ValueError(f"Add variable shortname to variables dictionary.")
+    vname = variables[f_dwnld['variable']]['vname']
+    prefix = f_dwnld['prefix']
+
     # Open file
     ds = xr.open_dataset(f_dwnld['fname'])
-    da = ds[f_dwnld['variable']]
+    da = ds[vname]
     da = ut.check_dimensions(da)
 
-    prefix = f_dwnld['prefix']
 
     # Time averages
     if 'time_average' in list(pp_params.keys()):
