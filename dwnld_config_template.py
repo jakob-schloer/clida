@@ -33,7 +33,7 @@ pp_params_all = [{
 # ERA5 
 # ======================================================================================
 data_params_all = [
-    {'variable': 'sst', 
+    {'variable': 'sea_surface_temperature', 
      'resolution': 'hourly', # 'hourly', 'monthly'
      'plevels': [1000], 
      'time_range': [2017, 2019]}

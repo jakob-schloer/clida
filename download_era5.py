@@ -82,139 +82,139 @@ for data_params in cfg.data_params_all:
             prefix = (dirpath + f"/{variable}_era5_{resolution}_{plevel}_{year}")
             fname = prefix + ".nc"
 
-            if (not cfg.overwrite) & (os.path.exists(fname)):
-                warnings.warn(
-                    f"File {fname} exists and will not be overwritten!")
-                continue
-            else:
+            if (cfg.overwrite) | (not os.path.exists(fname)):
                 # Create directory
                 if not os.path.exists(dirpath):
                     os.makedirs(dirpath)
 
-            c = cdsapi.Client()
+                c = cdsapi.Client()
 
-            if resolution == 'hourly':
-                if plevel == 'sp':
-                    c.retrieve(
-                        'reanalysis-era5-single-levels',
-                        {
-                            'product_type': 'reanalysis',
-                            'format': 'netcdf',
-                            'variable': [variable],
-                            'year': [str(year)],
-                            'month': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                            ],
-                            'day': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                                '13', '14', '15',
-                                '16', '17', '18',
-                                '19', '20', '21',
-                                '22', '23', '24',
-                                '25', '26', '27',
-                                '28', '29', '30',
-                                '31',
-                            ],
-                            'time': [
-                                '00:00', '01:00', '02:00',
-                                '03:00', '04:00', '05:00',
-                                '06:00', '07:00', '08:00',
-                                '09:00', '10:00', '11:00',
-                                '12:00', '13:00', '14:00',
-                                '15:00', '16:00', '17:00',
-                                '18:00', '19:00', '20:00',
-                                '21:00', '22:00', '23:00',
-                            ],
-                        },
-                        fname)
-                else:
-                    c.retrieve(
-                        'reanalysis-era5-pressure-levels',
-                        {
-                            'product_type': 'reanalysis',
-                            'format': 'netcdf',
-                            'variable': [variable],
-                            'year': [str(year)],
-                            'pressure_level': plevel,
-                            'month': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                            ],
-                            'day': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                                '13', '14', '15',
-                                '16', '17', '18',
-                                '19', '20', '21',
-                                '22', '23', '24',
-                                '25', '26', '27',
-                                '28', '29', '30',
-                                '31',
-                            ],
-                            'time': [
-                                '00:00', '01:00', '02:00',
-                                '03:00', '04:00', '05:00',
-                                '06:00', '07:00', '08:00',
-                                '09:00', '10:00', '11:00',
-                                '12:00', '13:00', '14:00',
-                                '15:00', '16:00', '17:00',
-                                '18:00', '19:00', '20:00',
-                                '21:00', '22:00', '23:00',
-                            ],
-                        },
-                        fname)
+                if resolution == 'hourly':
+                    if plevel == 'sp':
+                        c.retrieve(
+                            'reanalysis-era5-single-levels',
+                            {
+                                'product_type': 'reanalysis',
+                                'format': 'netcdf',
+                                'variable': [variable],
+                                'year': [str(year)],
+                                'month': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                ],
+                                'day': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                    '13', '14', '15',
+                                    '16', '17', '18',
+                                    '19', '20', '21',
+                                    '22', '23', '24',
+                                    '25', '26', '27',
+                                    '28', '29', '30',
+                                    '31',
+                                ],
+                                'time': [
+                                    '00:00', '01:00', '02:00',
+                                    '03:00', '04:00', '05:00',
+                                    '06:00', '07:00', '08:00',
+                                    '09:00', '10:00', '11:00',
+                                    '12:00', '13:00', '14:00',
+                                    '15:00', '16:00', '17:00',
+                                    '18:00', '19:00', '20:00',
+                                    '21:00', '22:00', '23:00',
+                                ],
+                            },
+                            fname)
+                    else:
+                        c.retrieve(
+                            'reanalysis-era5-pressure-levels',
+                            {
+                                'product_type': 'reanalysis',
+                                'format': 'netcdf',
+                                'variable': [variable],
+                                'year': [str(year)],
+                                'pressure_level': plevel,
+                                'month': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                ],
+                                'day': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                    '13', '14', '15',
+                                    '16', '17', '18',
+                                    '19', '20', '21',
+                                    '22', '23', '24',
+                                    '25', '26', '27',
+                                    '28', '29', '30',
+                                    '31',
+                                ],
+                                'time': [
+                                    '00:00', '01:00', '02:00',
+                                    '03:00', '04:00', '05:00',
+                                    '06:00', '07:00', '08:00',
+                                    '09:00', '10:00', '11:00',
+                                    '12:00', '13:00', '14:00',
+                                    '15:00', '16:00', '17:00',
+                                    '18:00', '19:00', '20:00',
+                                    '21:00', '22:00', '23:00',
+                                ],
+                            },
+                            fname)
 
-            elif resolution == 'monthly':
-                if plevel == 'sp':
-                    c.retrieve(
-                        'reanalysis-era5-single-levels-monthly-means',
-                        {
-                            'product_type': 'monthly_averaged_reanalysis',
-                            'format': 'netcdf',
-                            'variable': [variable],
-                            'year': [str(year)],
-                            'month': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                            ],
-                            'time': '00:00',
-                        },
-                        fname)
+                elif resolution == 'monthly':
+                    if plevel == 'sp':
+                        c.retrieve(
+                            'reanalysis-era5-single-levels-monthly-means',
+                            {
+                                'product_type': 'monthly_averaged_reanalysis',
+                                'format': 'netcdf',
+                                'variable': [variable],
+                                'year': [str(year)],
+                                'month': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                ],
+                                'time': '00:00',
+                            },
+                            fname)
+                    else:
+                        c.retrieve(
+                            'reanalysis-era5-pressure-levels-monthly-means',
+                            {
+                                'product_type': 'monthly_averaged_reanalysis',
+                                'format': 'netcdf',
+                                'variable': [variable],
+                                'year': [str(year)],
+                                'pressure_level': plevel,
+                                'month': [
+                                    '01', '02', '03',
+                                    '04', '05', '06',
+                                    '07', '08', '09',
+                                    '10', '11', '12',
+                                ],
+                                'time': '00:00',
+                            },
+                            fname)
                 else:
-                    c.retrieve(
-                        'reanalysis-era5-pressure-levels-monthly-means',
-                        {
-                            'product_type': 'monthly_averaged_reanalysis',
-                            'format': 'netcdf',
-                            'variable': [variable],
-                            'year': [str(year)],
-                            'pressure_level': plevel,
-                            'month': [
-                                '01', '02', '03',
-                                '04', '05', '06',
-                                '07', '08', '09',
-                                '10', '11', '12',
-                            ],
-                            'time': '00:00',
-                        },
-                        fname)
+                    ValueError(f"{resolution} does not exist!")
+                del c
             else:
-                ValueError(f"{resolution} does not exist!")
-            del c
+                warnings.warn(
+                    f"File {fname} exists and will not be overwritten!")
 
             filelist.append(fname)
+
 
         # Merge and preprocess files
         merge_files = []
@@ -238,9 +238,8 @@ for data_params in cfg.data_params_all:
 # Preprocess downloaded files
 # ======================================================================================
 variables = {
-    'sea_surface_temperature': dict(
-        vname='sst'
-    )
+    'sea_surface_temperature': dict(vname='sst'),
+    'sst': dict(vname='sst'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
