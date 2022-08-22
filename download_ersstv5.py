@@ -43,7 +43,7 @@ for data_params in cfg.data_params_all:
     # Filepath
     dirpath = (cfg.lpaths['raw_data_dir']
                + f"/ERSSTv5/{varspec['time_res']}/{data_params['variable']}")
-    prefix = (dirpath + f"/{data_params['variable']}_{varspec['time_res']}"
+    prefix = (dirpath + f"/{data_params['variable']}_ersstv5_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
     fname = prefix + ".nc"
 

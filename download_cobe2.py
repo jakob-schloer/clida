@@ -1,4 +1,4 @@
-''' Download ERSSTv5 reanalysis data.
+''' Download COBE2 reanalysis data.
 
 @Author  :   Jakob Schlör 
 @Time    :   2022/07/27 10:32:30
@@ -43,9 +43,9 @@ for data_params in cfg.data_params_all:
     # Filepath
     dirpath = (cfg.lpaths['raw_data_dir']
                + f"/COBE2/{varspec['time_res']}/{data_params['variable']}")
-    prefix = (dirpath + f"/{data_params['variable']}_COBE2_{varspec['time_res']}"
+    prefix = (dirpath + f"/{data_params['variable']}_cobe2_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
-    fname = prefix + ".nc"
+    fname = prefix + "_raw.nc"
 
     if (not cfg.overwrite) & (os.path.exists(fname)):
         warnings.warn(f"File {fname} exists and will not be overwritten!")

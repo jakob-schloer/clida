@@ -36,6 +36,12 @@ import utils as ut
 # Get config file
 import dwnld_config as cfg
 
+variables = {
+    'sea_surface_temperature': dict(
+        vname='sst'
+    )
+}
+
 # %%
 # Download files
 ##########################################################################################
@@ -71,6 +77,7 @@ for data_params in cfg.data_params_all:
 
     for plevel in plevels:
         print(f"Download pressure level {plevel}")
+        filelist = []
         for year in years:
             dirpath = cfg.lpaths['raw_data_dir'] + f"/ERA5" + f"/{resolution}"
             if plevel == 'sp':
@@ -213,11 +220,27 @@ for data_params in cfg.data_params_all:
                 ValueError(f"{resolution} does not exist!")
             del c
 
-            dwnld_files.append(dict(
-                fname=fname,
-                prefix=prefix,
-                variable=data_params['variable']
-            ))
+            filelist.append(fname)
+
+        # Merge and preprocess files
+        merge_files = []
+        vname = variables[variable]['vname']
+        for i, fname in enumerate(filelist):
+            # Open file
+            ds = xr.open_dataset(fname)
+            da = ds[vname]
+            da = ut.check_dimensions(da)
+            merge_files.append(da)
+        da_merge = xr.concat(merge_files, dim='time')
+        prefix = (dirpath + f"/{vname}_era5_{resolution}_{plevel}"
+                  + f"_{starty}-{endy}")
+        ut.save_to_file(da_merge, prefix + "_raw.nc", var_name=data_params['variable'])
+            
+        dwnld_files.append(dict(
+            fname=prefix + "_raw.nc",
+            prefix=prefix,
+            variable=vname,
+        ))
 
 # %%
 # Preprocess downloaded files
@@ -234,6 +257,8 @@ for i, f_dwnld in enumerate(dwnld_files):
     ds = xr.open_dataset(f_dwnld['fname'])
     da = ds[f_dwnld['variable']]
     da = ut.check_dimensions(da)
+
+    prefix = f_dwnld['prefix']
 
     # Time averages
     if 'time_average' in list(pp_params.keys()):

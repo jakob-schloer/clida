@@ -45,9 +45,9 @@ for data_params in cfg.data_params_all:
     # Filepath
     dirpath = (cfg.lpaths['raw_data_dir']
                + f"/HadISST/{varspec['time_res']}/{data_params['variable']}")
-    prefix = (dirpath + f"/{data_params['variable']}_{varspec['time_res']}"
+    prefix = (dirpath + f"/{data_params['variable']}_hadisst_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
-    fname = prefix + ".nc"
+    fname = prefix + "_raw.nc"
 
     if (not cfg.overwrite) & (os.path.exists(fname)):
         warnings.warn(f"File {fname} exists and will not be overwritten!")
