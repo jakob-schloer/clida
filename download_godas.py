@@ -88,10 +88,10 @@ for data_params in cfg.data_params_all:
     da_merge = xr.concat(filelist, dim='time')
     prefix = (dirpath + f"/{data_params['variable']}_godas_{varspec['time_res']}"
               + f"_{varspec['start']}-{varspec['end']}")
-    ut.save_to_file(da_merge, prefix + ".nc", var_name=data_params['variable'])
+    ut.save_to_file(da_merge, prefix + "_raw.nc", var_name=data_params['variable'])
 
     dwnld_files.append(dict(
-        fname=prefix + ".nc",
+        fname=prefix + "_raw.nc",
         prefix=prefix,
         variable=data_params['variable']
     ))

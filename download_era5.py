@@ -43,14 +43,14 @@ cdo = Cdo()    # Parameters
 dwnld_files = []
 for data_params in cfg.data_params_all:
     variable = data_params['variable']
-    print(f"Download variable {variable}")
+    print(f"Download variable {variable}", flush=True)
 
     # Time resolution
     if 'resolution' in data_params:
         resolution = data_params['resolution']
     else:
         resolution = 'hourly'
-    print(f"Download {resolution} data.")
+    print(f"Download {resolution} data.", flush=True)
 
     # Pressure levels
     if 'plevels' in data_params:
@@ -66,14 +66,14 @@ for data_params in cfg.data_params_all:
     else:
         starty = 1959
         endy = 2021
-    print(f"Download year {starty} to {endy}")
+    print(f"Download year {starty} to {endy}", flush=True)
     years = np.arange(starty, endy+1, 1)
 
     for plevel in plevels:
-        print(f"Download pressure level {plevel}")
+        print(f"Download pressure level {plevel}", flush=True)
         filelist = []
         for year in years:
-            dirpath = cfg.lpaths['raw_data_dir'] + f"/ERA5" + f"/{resolution}"
+            dirpath = cfg.lpaths['raw_data_dir'] + f"/era5" + f"/{resolution}"
             if plevel == 'sp':
                 dirpath += f'/single_pressure_level/{variable}/'
             else:
@@ -210,13 +210,13 @@ for data_params in cfg.data_params_all:
                     ValueError(f"{resolution} does not exist!")
                 del c
             else:
-                warnings.warn(
-                    f"File {fname} exists and will not be overwritten!")
+                print(f"File {fname} exists and will not be overwritten!", flush=True)
 
             filelist.append(fname)
 
 
         # Merge and preprocess files
+        print("Merge files.", flush=True)
         merge_files = []
         for i, fname in enumerate(filelist):
             # Open file
@@ -226,6 +226,7 @@ for data_params in cfg.data_params_all:
         ds_merge = xr.concat(merge_files, dim='time')
         prefix = (dirpath + f"/{variable}_era5_{resolution}_{plevel}"
                   + f"_{starty}-{endy}")
+        print(f"Store merged file {prefix}_raw.nc.", flush=True)
         ds_merge.to_netcdf(prefix + "_raw.nc")
             
         dwnld_files.append(dict(
@@ -243,6 +244,7 @@ variables = {
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
+    print(f"Preprocess {f_dwnld['fname']}", flush=True)
     if len(cfg.pp_params_all) > 1:
         raise ValueError(
             "For ERA5 we only allow all files to be processed equally!")
@@ -263,8 +265,8 @@ for i, f_dwnld in enumerate(dwnld_files):
 
     # Time averages
     if 'time_average' in list(pp_params.keys()):
-        print(
-            f"Resample time by {pp_params['time_average']} and compute mean.")
+        print(f"Resample time by {pp_params['time_average']} and compute mean.",
+              flush=True)
         da = da.resample(time=pp_params['time_average'], label='left').mean()
         if pp_params['time_average'] == 'month':
             da = da.assign_coords(
@@ -285,14 +287,14 @@ for i, f_dwnld in enumerate(dwnld_files):
         lat_range = None
 
     if ('lon' in list(pp_params.keys())) or ('lat' in list(pp_params.keys())):
-        print(f'Get selected area: lon={lon_range}, lat={lat_range}!')
+        print(f'Get selected area: lon={lon_range}, lat={lat_range}!', flush=True)
         da = ut.cut_map(
             da, lon_range=lon_range, lat_range=lat_range, shortest=False
         )
 
     # coarse grid if needed
     if 'grid_step' in list(pp_params.keys()):
-        print(f"Interpolate grid on res {pp_params['grid_step']}")
+        print(f"Interpolate grid on res {pp_params['grid_step']}", flush=True)
         da, grid = ut.set_grid(
             da, step_lat=pp_params['grid_step'], step_lon=pp_params['grid_step'],
             lat_range=lat_range, lon_range=lon_range)
