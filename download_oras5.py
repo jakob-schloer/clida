@@ -164,10 +164,6 @@ for i, f_dwnld in enumerate(dwnld_files):
     da = ut.interp_points2mercato(da, grid=grid, n_cpus=n_cpus)
     prefix += f"_{grid_step}x{grid_step}"
 
-    # Save to file
-    new_vname = var_spec[f_dwnld['variable']]['new_vname']
-    ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
-
     # Other preprocessing
     da = ut.check_dimensions(da)
 
