@@ -65,7 +65,7 @@ for data_params in cfg.data_params_all:
             product_type = 'operational'
 
 
-        if (cfg.overwrite) | (not os.path.exists(fname)):
+        if (cfg.overwrite) | (not os.path.exists(prefix + ".nc")):
             c = cdsapi.Client()
 
             c.retrieve(
@@ -121,7 +121,7 @@ for data_params in cfg.data_params_all:
 # ======================================================================================
 var_spec = {
     'sea_surface_temperature': dict(vname='sosstsst', new_vname='sst'),
-    'sea_surface_height': dict(vname='sossh', new_vname='ssh'),
+    'sea_surface_height': dict(vname='sossheig', new_vname='ssh'),
     'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
 }
 
