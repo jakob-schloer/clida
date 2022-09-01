@@ -152,7 +152,7 @@ def interp_points(i, da, points_origin, points_grid):
     return i, values_grid_flat
 
 
-def interp_points2mercato(da, grid):
+def interp_points2mercato(da, grid, n_cpus=1):
     """Interpolate Dataarray with non-rectangular grid to mercato grid.
 
     Args:
@@ -162,6 +162,8 @@ def interp_points2mercato(da, grid):
     Returns:
         da_grid (xr.Dataarray): Dataarray interpolated on mercato grid. 
     """
+    print(f"Interpolate data with non-rectangular grid to mercato grid. n_cpus={n_cpus}.",
+          flush=True)
     # Create array of points from mercato grid
     xx, yy = np.meshgrid(grid['lon'], grid['lat'])
     points_grid = np.array([xx.flatten(), yy.flatten()]).T
@@ -170,7 +172,7 @@ def interp_points2mercato(da, grid):
 
     # Interpolation at each time step in parallel
     n_processes = len(da['time_counter'])
-    results = Parallel(n_jobs=8)(
+    results = Parallel(n_jobs=n_cpus)(
         delayed(interp_points)(i, da, points_origin, points_grid)
         for i in tqdm(range(n_processes))
     )

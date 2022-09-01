@@ -7,13 +7,12 @@
 # %%
 import sys
 import os
-from tkinter import Variable
-import warnings
 import numpy as np
 import xarray as xr
 from cdo import Cdo
 from zipfile import ZipFile
 import cdsapi
+import multiprocessing as mpi
 
 import utils as ut
 
@@ -143,7 +142,6 @@ for i, f_dwnld in enumerate(dwnld_files):
     # Open file
     ds = xr.open_dataset(f_dwnld['fname'])
     da = ds[vname]
-    da = ut.check_dimensions(da)
 
     # Interpolate tripolar grid on mercato grid
     grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
@@ -156,8 +154,22 @@ for i, f_dwnld in enumerate(dwnld_files):
         -180, 180, grid_step 
     )
     grid = {'lat': init_lat, 'lon': init_lon}
-    da = ut.interp_points2mercato(da, grid=grid)
+    try:
+        n_cpus = int(os.environ['SLURM_CPUS_PER_TASK'])
+        print(f"SLURM_CPUS_PER_TASK: {os.environ['SLURM_CPUS_PER_TASK']}")
+    except:
+        print("Could not find environment varialble 'SLURM_CPUS_PER_TASK'.")
+        n_cpus = mpi.cpu_count()
+
+    da = ut.interp_points2mercato(da, grid=grid, n_cpus=n_cpus)
     prefix += f"_{grid_step}x{grid_step}"
+
+    # Save to file
+    new_vname = var_spec[f_dwnld['variable']]['new_vname']
+    ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
+
+    # Other preprocessing
+    da = ut.check_dimensions(da)
 
     # Cut area of interest
     if 'lon' in list(pp_params.keys()):
