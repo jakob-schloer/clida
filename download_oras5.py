@@ -1,6 +1,6 @@
 ''' Download ORAS5 reanalysis dataset.
 
-@Author  :   Felix Strnad, Jakob Schlör
+@Author  :   Jakob Schlör
 @Time    :   2022/08/12 09:08:23
 @Contact :   jakob.schloer@uni-tuebingen.de
 '''
@@ -46,7 +46,7 @@ for data_params in cfg.data_params_all:
     print(f"Download year {starty} to {endy}")
     years = np.arange(starty, endy+1, 1)
 
-
+    filelist = []
     for year in years:
         dirpath = cfg.lpaths['raw_data_dir'] + f"/oras5/{variable}"
 
@@ -103,11 +103,91 @@ for data_params in cfg.data_params_all:
 
             del c
 
-        dwnld_files.append(prefix + ".nc")
+        filelist.append(prefix + ".nc")
 
-    fname_yrange = (dirpath + f"/{variable}_oras5_{levels}_{starty}_{endy}.nc")
-    cdo.mergetime(options='-b F32 -f nc', input=dwnld_files,
+    # Merge yearly files
+    prefix_yrange = (dirpath + f"/{variable}_oras5_{levels}_{starty}_{endy}")
+    fname_yrange = prefix_yrange + "_raw.nc"
+    cdo.mergetime(options='-b F32 -f nc', input=filelist,
                   output=fname_yrange)
+    dwnld_files.append(dict(
+        fname=fname_yrange,
+        prefix=prefix_yrange,
+        variable=variable,
+    ))
 
 # %%
-# TODO: Preprocessing of oras5. Complication due to tripolar grid
+# Preprocess downloaded files
+# ======================================================================================
+var_spec = {
+    'sea_surface_temperature': dict(vname='sosstsst', new_vname='sst'),
+    'sea_surface_height': dict(vname='sossh', new_vname='ssh'),
+    'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
+}
+
+for i, f_dwnld in enumerate(dwnld_files):
+    print(f"Preprocess {f_dwnld['fname']}", flush=True)
+    if len(cfg.pp_params_all) > 1:
+        raise ValueError(
+            "For ORAS5 we only allow all files to be processed equally!")
+    else:
+        # Process all downloaded files equally
+        pp_params = cfg.pp_params_all[0]
+
+    if f_dwnld['variable'] not in list(var_spec.keys()):
+        raise ValueError(f"Add variable shortname to variables dictionary.")
+
+    vname = var_spec[f_dwnld['variable']]['vname']
+    prefix = f_dwnld['prefix']
+
+    # Open file
+    ds = xr.open_dataset(f_dwnld['fname'])
+    da = ds[vname]
+    da = ut.check_dimensions(da)
+
+    # Time averages
+    if 'time_average' in list(pp_params.keys()):
+        print(f"Resample time by {pp_params['time_average']} and compute mean.",
+              flush=True)
+        da = da.resample(time=pp_params['time_average'], label='left').mean()
+        if pp_params['time_average'] == 'month':
+            da = da.assign_coords(
+                dict(time=da['time'].data + np.timedelta64(1, 'D'))
+            )
+        prefix += f"_{pp_params['time_average']}mean"
+
+    # Interpolate tripolar grid on mercato grid
+    grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
+    print(f"Interpolate tripolar grid on mercator grid with res {grid_step}",
+          flush=True)
+    init_lat = np.arange(
+        -90, 90, grid_step
+    )
+    init_lon = np.arange(
+        -180, 180, grid_step 
+    )
+    grid = {'lat': init_lat, 'lon': init_lon}
+    da = ut.interp_points2mercato(da, grid=grid)
+    prefix += f"_{grid_step}x{grid_step}"
+
+    # Cut area of interest
+    if 'lon' in list(pp_params.keys()):
+        lon_range = pp_params['lon']
+        prefix += f"_lon_{lon_range[0]}-{lon_range[1]}"
+    else:
+        lon_range = None
+    if 'lat' in list(pp_params.keys()):
+        lat_range = pp_params['lat']
+        prefix += f"_lon_{lat_range[0]}-{lat_range[1]}"
+    else:
+        lat_range = None
+
+    if ('lon' in list(pp_params.keys())) or ('lat' in list(pp_params.keys())):
+        print(f'Get selected area: lon={lon_range}, lat={lat_range}!', flush=True)
+        da = ut.cut_map(
+            da, lon_range=lon_range, lat_range=lat_range, shortest=False
+        )
+
+    # Save to file
+    new_vname = var_spec[f_dwnld['variable']]['new_vname']
+    ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
