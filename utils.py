@@ -21,6 +21,7 @@ def check_dimensions(ds, sort=True):
         'latitude': 'lat',
         'nav_lat': 'lat',
         'yt_ocean': 'lat',
+        'time_counter': 'time',
     }
     for c_old, c_new in rename_dic.items():
         if c_old in dims:
