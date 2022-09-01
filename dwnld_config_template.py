@@ -45,6 +45,18 @@ pp_params_all = [{
     'time_average': 'day', 
 }]
 
+# ORAS5 
+# ======================================================================================
+data_params_all = [
+    {'variable': 'sea_surface_temperature', 
+     'time_range': [1958, 2022]}
+]
+pp_params_all = [{
+    'grid_step' : 1,
+    'lat': [-60, 60], 
+    'lon': [-150, 150], 
+}]
+
 # ERSSTv5, HadISST, COBE2, 
 # ======================================================================================
 data_params_all = [

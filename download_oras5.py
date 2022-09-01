@@ -65,7 +65,7 @@ for data_params in cfg.data_params_all:
             product_type = 'operational'
 
 
-        if cfg.overwrite | os.path.exists(fname):
+        if (cfg.overwrite) | (not os.path.exists(fname)):
             c = cdsapi.Client()
 
             c.retrieve(
@@ -144,17 +144,6 @@ for i, f_dwnld in enumerate(dwnld_files):
     ds = xr.open_dataset(f_dwnld['fname'])
     da = ds[vname]
     da = ut.check_dimensions(da)
-
-    # Time averages
-    if 'time_average' in list(pp_params.keys()):
-        print(f"Resample time by {pp_params['time_average']} and compute mean.",
-              flush=True)
-        da = da.resample(time=pp_params['time_average'], label='left').mean()
-        if pp_params['time_average'] == 'month':
-            da = da.assign_coords(
-                dict(time=da['time'].data + np.timedelta64(1, 'D'))
-            )
-        prefix += f"_{pp_params['time_average']}mean"
 
     # Interpolate tripolar grid on mercato grid
     grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
