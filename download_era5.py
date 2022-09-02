@@ -243,6 +243,7 @@ variables = {
     'sst': dict(vname='sst'),
     '10m_u_component_of_wind': dict(vname='u10'),
     '10m_v_component_of_wind': dict(vname='v10'),
+    'total_precipitation': dict(vname='tp'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
@@ -303,4 +304,4 @@ for i, f_dwnld in enumerate(dwnld_files):
         prefix += f"_{pp_params['grid_step']}x{pp_params['grid_step']}"
 
     # Save to file
-    ut.save_to_file(da, prefix + ".nc", var_name=f_dwnld['variable'])
+    ut.save_to_file(da, prefix + ".nc", var_name=vname)
