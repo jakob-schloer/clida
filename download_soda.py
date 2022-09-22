@@ -38,7 +38,6 @@ variables = {
         end='2017',
         time_res='month',
         vname='ssh',
-        zlevel=0
     )
 }
 # %%
