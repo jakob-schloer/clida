@@ -30,6 +30,15 @@ variables = {
         time_res='month',
         vname='temp',
         zlevel=0
+    ),
+    'ssh': dict(
+        url='https://dsrs.atmos.umd.edu/DATA/soda3.12.2/REGRIDED/ocean/',
+        prefix='soda3.12.2_mn_ocean_reg_',
+        start='1980',
+        end='2017',
+        time_res='month',
+        vname='ssh',
+        zlevel=0
     )
 }
 # %%

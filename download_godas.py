@@ -20,10 +20,6 @@ import utils as ut
 # Get config file
 import dwnld_config as cfg
 
-# TODO: get files for single years from website
-# {'name': 'GODAS', 'url': 'wget https://downloads.psl.noaa.gov/Datasets/godas/pottmp.1980.nc'}, # own script required
-# {'name': 'Tropflux', 'url': 'wget https://incois.gov.in/tropflux/DataDownload.jsp'}, # own script required
-
 # Specification of variables in dataset
 variables = {
     'sst': dict(
@@ -34,6 +30,14 @@ variables = {
         time_res='month',
         vname='pottmp',
         zlevel=0,
+    ),
+    'ssh': dict(
+        url='https://downloads.psl.noaa.gov/Datasets/godas/',
+        prefix='sshg.',
+        start='1980',
+        end='present',
+        time_res='month',
+        vname='sshg',
     )
 }
 # %%
