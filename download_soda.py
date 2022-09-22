@@ -54,7 +54,7 @@ for data_params in cfg.data_params_all:
  
     # Filepath
     dirpath = (cfg.lpaths['raw_data_dir']
-               + f"/SODA/{varspec['time_res']}/{data_params['variable']}")
+               + f"/SODA/{varspec['time_res']}")
 
     # Create directory
     if not os.path.exists(dirpath):
