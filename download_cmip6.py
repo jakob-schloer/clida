@@ -283,7 +283,7 @@ for data_params in cfg.data_params_all:
                     'fix_lons did not work because of the multi-dimensional index'
                 )
 
-            if cmip6_sub_row['table_id'] != 'fx':
+            if cmip6_sub_row['table_id'] not in ['fx', 'piControl']:
                 # Subset by time as set in subset_params
                 if 'time' in subset_params:
                     time_range = subset_params['time'][cmip6_sub_row['experiment_id']]
