@@ -60,7 +60,10 @@ pp_params_all = [{
 # ERSSTv5, HadISST, COBE2, 
 # ======================================================================================
 data_params_all = [
-    {'variable': 'sst'}
+    {'variable': 'sst'},
+    {'variable': 'ssh'},
+    {'variable': 'ucur'}, 
+    {'variable': 'vcur'},
 ]
 
 pp_params_all = [{

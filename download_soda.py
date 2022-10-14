@@ -21,24 +21,36 @@ import utils as ut
 import dwnld_config as cfg
 
 # Specification of variables in dataset
+common_param = dict(
+    url='https://dsrs.atmos.umd.edu/DATA/soda3.12.2/REGRIDED/ocean/',
+    prefix='soda3.12.2_mn_ocean_reg_',
+    start='1980',
+    end='2017',
+    time_res='month',
+)
 variables = {
-    'sst': dict(
-        url='https://dsrs.atmos.umd.edu/DATA/soda3.12.2/REGRIDED/ocean/',
-        prefix='soda3.12.2_mn_ocean_reg_',
-        start='1980',
-        end='2017',
-        time_res='month',
+    'sst': dict(**common_param,
         vname='temp',
         zlevel=0
     ),
-    'ssh': dict(
-        url='https://dsrs.atmos.umd.edu/DATA/soda3.12.2/REGRIDED/ocean/',
-        prefix='soda3.12.2_mn_ocean_reg_',
-        start='1980',
-        end='2017',
-        time_res='month',
+    'ssh': dict(**common_param,
         vname='ssh',
-    )
+    ),
+    'salt': dict(**common_param,
+        vname='salt',
+    ),
+    'ucur': dict(**common_param,
+        vname='u',
+    ),
+    'vcur': dict(**common_param,
+        vname='v',
+    ),
+    'taux': dict(**common_param,
+        vname='taux',
+    ),
+    'tauy': dict(**common_param,
+        vname='tauy',
+    ),
 }
 # %%
 # Download files
