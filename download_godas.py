@@ -38,7 +38,23 @@ variables = {
         end='present',
         time_res='month',
         vname='sshg',
-    )
+    ),
+    'ucur': dict(
+        url='https://downloads.psl.noaa.gov/Datasets/godas/',
+        prefix='ucur.',
+        start='1980',
+        end='present',
+        time_res='month',
+        vname='ucur',
+    ),
+    'vcur': dict(
+        url='https://downloads.psl.noaa.gov/Datasets/godas/',
+        prefix='vcur.',
+        start='1980',
+        end='present',
+        time_res='month',
+        vname='vcur',
+    ),
 }
 # %%
 # Download files
@@ -77,7 +93,8 @@ for data_params in cfg.data_params_all:
             print(f"File {fname} exists and will not be overwritten!", flush=True)
         
         localfilelist.append(fname)
-    
+        
+        break 
 
     # Merge and preprocess files
     filelist = []
