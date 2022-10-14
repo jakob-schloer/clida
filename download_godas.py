@@ -94,8 +94,6 @@ for data_params in cfg.data_params_all:
         
         localfilelist.append(fname)
         
-        break 
-
     # Merge and preprocess files
     filelist = []
     for i, fname in enumerate(localfilelist):
