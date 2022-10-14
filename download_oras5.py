@@ -122,6 +122,10 @@ var_spec = {
     'sea_surface_temperature': dict(vname='sosstsst', new_vname='sst'),
     'sea_surface_height': dict(vname='sossheig', new_vname='ssh'),
     'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
+    'meridional_velocity': dict(vname='soucur', new_vname='ucur'),
+    'zonal_velocity': dict(vname='sovcur', new_vname='vcur'),
+    'meridional_velocity': dict(vname='soucur', new_vname='ucur'),
+    'zonal_velocity': dict(vname='sovcur', new_vname='vcur'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):

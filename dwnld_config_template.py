@@ -48,8 +48,9 @@ pp_params_all = [{
 # ORAS5 
 # ======================================================================================
 data_params_all = [
-    {'variable': 'sea_surface_temperature', 
-     'time_range': [1958, 2022]}
+    {'variable': 'sea_surface_temperature', 'time_range': [1958, 2022]}
+    {'variable': 'meridional_velocity', 'time_range': [1958, 2022]}
+    {'variable': 'zonal_velocity', 'time_range': [1958, 2022]}
 ]
 pp_params_all = [{
     'grid_step' : 1,
