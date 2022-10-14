@@ -18,9 +18,11 @@ def check_dimensions(ds, sort=True):
         'longitude': 'lon',
         'nav_lon': 'lon',
         'xt_ocean': 'lon',
+        'xu_ocean': 'lon',
         'latitude': 'lat',
         'nav_lat': 'lat',
         'yt_ocean': 'lat',
+        'yu_ocean': 'lat',
         'time_counter': 'time',
     }
     for c_old, c_new in rename_dic.items():

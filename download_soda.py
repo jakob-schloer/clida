@@ -41,9 +41,11 @@ variables = {
     ),
     'ucur': dict(**common_param,
         vname='u',
+        zlevel=0
     ),
     'vcur': dict(**common_param,
         vname='v',
+        zlevel=0
     ),
     'taux': dict(**common_param,
         vname='taux',
