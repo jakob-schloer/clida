@@ -148,7 +148,10 @@ for i, f_dwnld in enumerate(dwnld_files):
     da = ds[vname]
 
     if 'zlevel' in var_spec[f_dwnld['variable']].keys():
-        da = da.isel(st_ocean=var_spec[f_dwnld['variable']]['zlevel'])
+        if vname == "vozocrtx":
+            da = da.isel(depthu=var_spec[f_dwnld['variable']]['zlevel'])
+        elif vname == "vomecrty":
+            da = da.isel(depthv=var_spec[f_dwnld['variable']]['zlevel'])
 
     # Interpolate tripolar grid on mercato grid
     grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
