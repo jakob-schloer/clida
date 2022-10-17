@@ -46,6 +46,7 @@ variables = {
         end='present',
         time_res='month',
         vname='ucur',
+        zlevel=0,
     ),
     'vcur': dict(
         url='https://downloads.psl.noaa.gov/Datasets/godas/',
@@ -54,6 +55,7 @@ variables = {
         end='present',
         time_res='month',
         vname='vcur',
+        zlevel=0,
     ),
 }
 # %%
