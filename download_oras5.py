@@ -124,8 +124,8 @@ var_spec = {
     'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
     'zonal_velocity': dict(vname='vozocrtx', new_vname='ucur', zlevel=0),
     'meridional_velocity': dict(vname='vomecrty', new_vname='vcur', zlevel=0),
-    'zonal_wind_stress': dict(vname='taux', new_vname='taux'),
-    'meridional_wind_stress': dict(vname='tauy', new_vname='tauy'), 
+    'zonal_wind_stress': dict(vname='sozotaux', new_vname='taux'),
+    'meridional_wind_stress': dict(vname='sometauy', new_vname='tauy'), 
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
