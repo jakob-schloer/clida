@@ -117,7 +117,14 @@ if len(cmip6_sub) == 0:
                   'Check to make sure your table_id matches the domain - for example,' +
                   'SSTs are listed as "Oday" instead of "day"')
 
-
+# %%
+# Check variables
+# df = cmip6_datasets.loc[
+#     (cmip6_datasets['source_id'] == 'UKESM1-0-LL') #'CESM2')
+#     & (cmip6_datasets['experiment_id'] == 'piControl')
+#     & (cmip6_datasets['table_id'] == 'Amon')
+# ]
+# df['variable_id'].unique()
 # %%
 # Process by variable and dataset in the subset
 ##########################################################################################
@@ -138,6 +145,7 @@ for data_params in cfg.data_params_all:
         for subset_params in cfg.pp_params_all:
             # Foldername
             filedir = (cfg.lpaths['raw_data_dir'] + '/'
+                       + "cmip6/" 
                        + cmip6_sub_row['table_id'] + '/'
                        + cmip6_sub_row['experiment_id'] + '/'
                        + cmip6_sub_row['source_id'] + '/'
