@@ -67,6 +67,8 @@ data_params_all = [
     {'variable': 'ssh'},
     {'variable': 'ucur'}, 
     {'variable': 'vcur'},
+    {'variable': 'taux'}, 
+    {'variable': 'tauy'},
 ]
 
 pp_params_all = [{

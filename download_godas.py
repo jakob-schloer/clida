@@ -57,6 +57,22 @@ variables = {
         vname='vcur',
         zlevel=0,
     ),
+    'taux': dict(
+        url='https://downloads.psl.noaa.gov/Datasets/godas/',
+        prefix='uflx.',
+        start='1980',
+        end='present',
+        time_res='month',
+        vname='uflx',
+    ),
+    'tauy': dict(
+        url='https://downloads.psl.noaa.gov/Datasets/godas/',
+        prefix='vflx.',
+        start='1980',
+        end='present',
+        time_res='month',
+        vname='vflx',
+    ),
 }
 # %%
 # Download files
