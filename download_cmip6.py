@@ -117,8 +117,8 @@ if len(cmip6_sub) == 0:
                   'Check to make sure your table_id matches the domain - for example,' +
                   'SSTs are listed as "Oday" instead of "day"')
 
-# %%
-# Check variables
+# # %%
+# # Check variables
 # df = cmip6_datasets.loc[
 #     (cmip6_datasets['source_id'] == 'UKESM1-0-LL') #'CESM2')
 #     & (cmip6_datasets['experiment_id'] == 'piControl')

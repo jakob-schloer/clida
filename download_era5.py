@@ -244,6 +244,7 @@ variables = {
     '10m_u_component_of_wind': dict(vname='u10'),
     '10m_v_component_of_wind': dict(vname='v10'),
     'total_precipitation': dict(vname='tp'),
+    'geopotential': dict(vname='z'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
