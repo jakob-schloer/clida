@@ -240,11 +240,11 @@ for data_params in cfg.data_params_all:
 # ======================================================================================
 variables = {
     'sea_surface_temperature': dict(vname='sst'),
-    'sst': dict(vname='sst'),
     '10m_u_component_of_wind': dict(vname='u10'),
     '10m_v_component_of_wind': dict(vname='v10'),
     'total_precipitation': dict(vname='tp'),
     'geopotential': dict(vname='z'),
+    'surface_pressure': dict(vname='sp'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):

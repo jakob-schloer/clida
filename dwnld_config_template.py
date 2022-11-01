@@ -35,7 +35,7 @@ pp_params_all = [{
 data_params_all = [
     {'variable': 'sea_surface_temperature', 
      'resolution': 'hourly', # 'hourly', 'monthly'
-     'plevels': [1000], 
+     'plevels': [1000],  # [500, 1000], ['sp']
      'time_range': [2017, 2019]}
 ]
 pp_params_all = [{
