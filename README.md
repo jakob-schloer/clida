@@ -1,7 +1,6 @@
 # clida
-This is a collection of scripts for downloading weather and climate data and preprocessing them accordingly.
 
-The idea as well as the scripts for downloading CMIP6 are taken from the climate-download repo of Kevin Schwarzwald.
+This is a collection of scripts for downloading weather and climate data and preprocessing them accordingly.
 
 ## Using these scripts
 
@@ -20,8 +19,6 @@ The following packages are required for running the scripts in this repo:
 
 
 ## TODO
-- ERA5 download only certain region
-- ORAS5
 - WeatherBench
 - CPCP, TRMM
 

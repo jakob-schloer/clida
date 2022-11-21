@@ -1,9 +1,7 @@
-'''Preprocess CMIP6 data
+'''Script for downloading CMIP6 files. 
 
-Script for downloading and saving CMIP6 files, with ability to subset by time and space. CMIP6 data is lazily loaded directly from the cloud, using the Pangeo - Google Cloud Public Dataset Program collaboration (more info [here](https://medium.com/pangeo/cmip6-in-the-cloud-five-ways-96b177abe396)).
-For each model, files are placed in a subdirectory of the `raw_data_dir` set in the `dwnld_config.py` file `[raw_data_dir]/[model_name]/`. If this subdirectory doesn't yet exist, it is created.
-
-Adopted from Kevin Schwarzwald.
+This scipt is adapted from the climate-download repo of Kevin Schwarzwald
+[https://github.com/ks905383/climate-downloads]
 
 Script is based on Pangeo documentation:
 https://pangeo-data.github.io/pangeo-cmip6-cloud/accessing_data.html#opening-a-single-zarr-data-store
