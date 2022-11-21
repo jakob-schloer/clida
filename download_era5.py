@@ -245,6 +245,7 @@ variables = {
     'total_precipitation': dict(vname='tp'),
     'geopotential': dict(vname='z'),
     'surface_pressure': dict(vname='sp'),
+    '2m_temperature': dict(vname='t2m'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
