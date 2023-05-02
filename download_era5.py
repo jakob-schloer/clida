@@ -64,8 +64,8 @@ for data_params in cfg.data_params_all:
         starty = data_params['time_range'][0]
         endy = data_params['time_range'][1]
     else:
-        starty = 1959
-        endy = 2021
+        starty = 1940
+        endy = 2022
     print(f"Download year {starty} to {endy}", flush=True)
     years = np.arange(starty, endy+1, 1)
 
@@ -246,6 +246,7 @@ variables = {
     'geopotential': dict(vname='z'),
     'surface_pressure': dict(vname='sp'),
     '2m_temperature': dict(vname='t2m'),
+    'top_net_thermal_radiation' : dict(vname='ttr'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
