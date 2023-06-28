@@ -310,12 +310,17 @@ for data_params in cfg.data_params_all:
                     ds_tmp = (ds_tmp.sel(time=slice(*time_range)))
 
             # Save as NetCDF file
-            ds_tmp.to_netcdf(
-                output_fns[cfg.pp_params_all.index(subset_params)])
+            try:
+                ds_tmp.to_netcdf(
+                    output_fns[cfg.pp_params_all.index(subset_params)])
+                    
+                # Status update
+                print(output_fns[cfg.pp_params_all.index(
+                    subset_params)]+' processed!')
+            except:
+                print(f"Could not save processed file {output_fns[cfg.pp_params_all.index(subset_params)]}")
+                continue
 
-            # Status update
-            print(output_fns[cfg.pp_params_all.index(
-                subset_params)]+' processed!')
 
         del ds, ds_tmp, subset_params
 

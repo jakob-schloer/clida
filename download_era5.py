@@ -247,6 +247,9 @@ variables = {
     'surface_pressure': dict(vname='sp'),
     '2m_temperature': dict(vname='t2m'),
     'top_net_thermal_radiation' : dict(vname='ttr'),
+    'u_component_of_wind': dict(vname='u'),
+    'v_component_of_wind': dict(vname='v'),
+    'vertical_velocity': dict(vname='w'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):

@@ -41,7 +41,7 @@ for data_params in cfg.data_params_all:
         endy = data_params['time_range'][1]
     else:
         starty = 1958
-        endy = 2022
+        endy = 2023
     print(f"Download year {starty} to {endy}")
     years = np.arange(starty, endy+1, 1)
 
@@ -198,3 +198,4 @@ for i, f_dwnld in enumerate(dwnld_files):
     # Save to file
     new_vname = var_spec[f_dwnld['variable']]['new_vname']
     ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
+# %%
