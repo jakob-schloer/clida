@@ -47,6 +47,9 @@ orig_da = orig_ds[var]
 orig_lats = orig_da['TLAT'].data
 orig_lons = orig_da['TLONG'].data
 
+if var == 'SST':
+    orig_da = orig_da.isel(z_t=0)
+
 # %%
 # Interpolate to regular grid
 # ======================================================================================
