@@ -245,6 +245,7 @@ variables = {
     'total_precipitation': dict(vname='tp'),
     'geopotential': dict(vname='z'),
     'surface_pressure': dict(vname='sp'),
+    'mean_sea_level_pressure': dict(vname='msl'),
     '2m_temperature': dict(vname='t2m'),
     'top_net_thermal_radiation' : dict(vname='ttr'),
     'u_component_of_wind': dict(vname='u'),
@@ -311,3 +312,5 @@ for i, f_dwnld in enumerate(dwnld_files):
 
     # Save to file
     ut.save_to_file(da, prefix + ".nc", var_name=vname)
+
+# %%
