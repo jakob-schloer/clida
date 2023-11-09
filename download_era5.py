@@ -251,6 +251,10 @@ variables = {
     'u_component_of_wind': dict(vname='u'),
     'v_component_of_wind': dict(vname='v'),
     'vertical_velocity': dict(vname='w'),
+    'specific_humidity': dict(vname='q'),
+    'relative_humidity': dict(vname='r'),
+    'total_cloud_cover': dict(vname='tcc'),
+    'temperature': dict(vname='t'),
 }
 
 for i, f_dwnld in enumerate(dwnld_files):
