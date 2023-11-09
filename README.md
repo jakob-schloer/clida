@@ -4,7 +4,7 @@ This is a collection of scripts for downloading weather and climate data and pre
 
 ## Using these scripts
 
-Specify the output folder directory and parameters in the dwnld_config.py which is imported in each script.
+Specify the output folder directory and parameters in the `dwnld_config.py` which is imported in each script.
 
 A template can be found in `dwnld_config_template.py`.
 
@@ -17,6 +17,9 @@ The following packages are required for running the scripts in this repo:
 - cdsapi
 - cdo
 
+### Download ERA5
+
+ERA5 data are downloaded via the Climate Data Store (CDS) Application Program Interface (API). Follow the steps on their [how-to-api](https://cds.climate.copernicus.eu/api-how-to).
 
 ## TODO
 - WeatherBench
