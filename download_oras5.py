@@ -5,8 +5,7 @@
 @Contact :   jakob.schloer@uni-tuebingen.de
 '''
 # %%
-import sys
-import os
+import sys, os, shutil
 import numpy as np
 import xarray as xr
 from cdo import Cdo
@@ -96,16 +95,23 @@ for data_params in cfg.data_params_all:
             for f in os.scandir(prefix):
                 month_files.append(f.path)
 
-            print("Unzip files.")
+            print("Merge monthly files to year.")
             cdo.mergetime(options='-b F32 -f nc', input=month_files,
                           output=prefix + ".nc")
 
             del c
 
+            print("Remove zip file and folder.")
+            os.remove(fname) 
+            shutil.rmtree(prefix)
+
+
         filelist.append(prefix + ".nc")
 
     # Merge yearly files
-    prefix_yrange = (dirpath + f"/{variable}_oras5_{levels}_{starty}_{endy}")
+    if not os.path.exists(os.path.join(dirpath, 'merged')):
+        os.makedirs(os.path.join(dirpath, 'merged'))
+    prefix_yrange = (dirpath + f"/merged/{variable}_oras5_{levels}_{starty}_{endy}")
     fname_yrange = prefix_yrange + "_raw.nc"
     cdo.mergetime(options='-b F32 -f nc', input=filelist,
                   output=fname_yrange)
@@ -118,84 +124,85 @@ for data_params in cfg.data_params_all:
 # %%
 # Preprocess downloaded files
 # ======================================================================================
-var_spec = {
-    'sea_surface_temperature': dict(vname='sosstsst', new_vname='sst'),
-    'sea_surface_height': dict(vname='sossheig', new_vname='ssh'),
-    'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
-    'zonal_velocity': dict(vname='vozocrtx', new_vname='ucur', zlevel=0),
-    'meridional_velocity': dict(vname='vomecrty', new_vname='vcur', zlevel=0),
-    'zonal_wind_stress': dict(vname='sozotaux', new_vname='taux'),
-    'meridional_wind_stress': dict(vname='sometauy', new_vname='tauy'), 
-}
+if cfg.pp_params_all is not None:
+    var_spec = {
+        'sea_surface_temperature': dict(vname='sosstsst', new_vname='sst'),
+        'sea_surface_height': dict(vname='sossheig', new_vname='ssh'),
+        'ocean_heat_content_for_the_upper_300m': dict(vname='sohtc300', new_vname='t300'),
+        'zonal_velocity': dict(vname='vozocrtx', new_vname='ucur', zlevel=0),
+        'meridional_velocity': dict(vname='vomecrty', new_vname='vcur', zlevel=0),
+        'zonal_wind_stress': dict(vname='sozotaux', new_vname='taux'),
+        'meridional_wind_stress': dict(vname='sometauy', new_vname='tauy'), 
+    }
 
-for i, f_dwnld in enumerate(dwnld_files):
-    print(f"Preprocess {f_dwnld['fname']}", flush=True)
-    if len(cfg.pp_params_all) > 1:
-        raise ValueError(
-            "For ORAS5 we only allow all files to be processed equally!")
-    else:
-        # Process all downloaded files equally
-        pp_params = cfg.pp_params_all[0]
+    for i, f_dwnld in enumerate(dwnld_files):
+        print(f"Preprocess {f_dwnld['fname']}", flush=True)
+        if len(cfg.pp_params_all) > 1:
+            raise ValueError(
+                "For ORAS5 we only allow all files to be processed equally!")
+        else:
+            # Process all downloaded files equally
+            pp_params = cfg.pp_params_all[0]
 
-    if f_dwnld['variable'] not in list(var_spec.keys()):
-        raise ValueError(f"Add variable shortname to variables dictionary.")
+        if f_dwnld['variable'] not in list(var_spec.keys()):
+            raise ValueError(f"Add variable shortname to variables dictionary.")
 
-    vname = var_spec[f_dwnld['variable']]['vname']
-    prefix = f_dwnld['prefix']
+        vname = var_spec[f_dwnld['variable']]['vname']
+        prefix = f_dwnld['prefix']
 
-    # Open file
-    ds = xr.open_dataset(f_dwnld['fname'])
-    da = ds[vname]
+        # Open file
+        ds = xr.open_dataset(f_dwnld['fname'])
+        da = ds[vname]
 
-    if 'zlevel' in var_spec[f_dwnld['variable']].keys():
-        if vname == "vozocrtx":
-            da = da.isel(depthu=var_spec[f_dwnld['variable']]['zlevel'])
-        elif vname == "vomecrty":
-            da = da.isel(depthv=var_spec[f_dwnld['variable']]['zlevel'])
+        if 'zlevel' in var_spec[f_dwnld['variable']].keys():
+            if vname == "vozocrtx":
+                da = da.isel(depthu=var_spec[f_dwnld['variable']]['zlevel'])
+            elif vname == "vomecrty":
+                da = da.isel(depthv=var_spec[f_dwnld['variable']]['zlevel'])
 
-    # Interpolate tripolar grid on mercato grid
-    grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
-    print(f"Interpolate tripolar grid on mercator grid with res {grid_step}",
-          flush=True)
-    init_lat = np.arange(
-        -90, 90, grid_step
-    )
-    init_lon = np.arange(
-        -180, 180, grid_step 
-    )
-    grid = {'lat': init_lat, 'lon': init_lon}
-    try:
-        n_cpus = int(os.environ['SLURM_CPUS_PER_TASK'])
-        print(f"SLURM_CPUS_PER_TASK: {os.environ['SLURM_CPUS_PER_TASK']}")
-    except:
-        print("Could not find environment varialble 'SLURM_CPUS_PER_TASK'.")
-        n_cpus = mpi.cpu_count()
-
-    da = ut.interp_points2mercato(da, grid=grid, n_cpus=n_cpus)
-    prefix += f"_{grid_step}x{grid_step}"
-
-    # Other preprocessing
-    da = ut.check_dimensions(da)
-
-    # Cut area of interest
-    if 'lon' in list(pp_params.keys()):
-        lon_range = pp_params['lon']
-        prefix += f"_lon_{lon_range[0]}-{lon_range[1]}"
-    else:
-        lon_range = None
-    if 'lat' in list(pp_params.keys()):
-        lat_range = pp_params['lat']
-        prefix += f"_lon_{lat_range[0]}-{lat_range[1]}"
-    else:
-        lat_range = None
-
-    if ('lon' in list(pp_params.keys())) or ('lat' in list(pp_params.keys())):
-        print(f'Get selected area: lon={lon_range}, lat={lat_range}!', flush=True)
-        da = ut.cut_map(
-            da, lon_range=lon_range, lat_range=lat_range, shortest=False
+        # Interpolate tripolar grid on mercato grid
+        grid_step = pp_params['grid_step'] if 'grid_step' in list(pp_params.keys()) else 1
+        print(f"Interpolate tripolar grid on mercator grid with res {grid_step}",
+              flush=True)
+        init_lat = np.arange(
+            -90, 90, grid_step
         )
+        init_lon = np.arange(
+            -180, 180, grid_step 
+        )
+        grid = {'lat': init_lat, 'lon': init_lon}
+        try:
+            n_cpus = int(os.environ['SLURM_CPUS_PER_TASK'])
+            print(f"SLURM_CPUS_PER_TASK: {os.environ['SLURM_CPUS_PER_TASK']}")
+        except:
+            print("Could not find environment varialble 'SLURM_CPUS_PER_TASK'.")
+            n_cpus = mpi.cpu_count()
 
-    # Save to file
-    new_vname = var_spec[f_dwnld['variable']]['new_vname']
-    ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
+        da = ut.interp_points2mercato(da, grid=grid, n_cpus=n_cpus)
+        prefix += f"_{grid_step}x{grid_step}"
+
+        # Other preprocessing
+        da = ut.check_dimensions(da)
+
+        # Cut area of interest
+        if 'lon' in list(pp_params.keys()):
+            lon_range = pp_params['lon']
+            prefix += f"_lon_{lon_range[0]}-{lon_range[1]}"
+        else:
+            lon_range = None
+        if 'lat' in list(pp_params.keys()):
+            lat_range = pp_params['lat']
+            prefix += f"_lon_{lat_range[0]}-{lat_range[1]}"
+        else:
+            lat_range = None
+
+        if ('lon' in list(pp_params.keys())) or ('lat' in list(pp_params.keys())):
+            print(f'Get selected area: lon={lon_range}, lat={lat_range}!', flush=True)
+            da = ut.cut_map(
+                da, lon_range=lon_range, lat_range=lat_range, shortest=False
+            )
+
+        # Save to file
+        new_vname = var_spec[f_dwnld['variable']]['new_vname']
+        ut.save_to_file(da, prefix + ".nc", var_name=new_vname)
 # %%

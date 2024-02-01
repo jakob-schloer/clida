@@ -1,0 +1,26 @@
+name: clidaEnv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - jupyter
+  - python[version='>=3.8']
+  - ipython
+  - ipywidgets
+  - pip
+  - xarray 
+  - netcdf4
+  - zarr
+  - dask
+  - pandas
+  - numpy
+  - scipy
+  - gcsfs
+  - cdsapi
+  - python-cdo
+  - cftime
+  - tqdm
+  - joblib
+  - matplotlib
+  - cartopy
+  - nc-time-axis

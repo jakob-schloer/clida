@@ -4,22 +4,14 @@ This is a collection of scripts for downloading weather and climate data and pre
 
 ## Set-up
 
-### Required packages
+### Install required packages
 
-The following packages are required for running the scripts in this repo:
-- xarray 
-- netcdf4
-- pandas
-- numpy
-- scipy
-- gcsfs
-- zarr
-- cdsapi
-- cdo
-- cftime
-- re
-- tqdm
-- joblib
+Create environment and install required packages
+```
+    mamba create -n clidaEnv
+    mamba env update -n clidaEnv -f condaenv.yml
+```
+
 
 ### Download ERA5
 
